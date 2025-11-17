@@ -2,16 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>UTM Calculator</title>
+  <title>UTM Area & Perimeter Calculator</title>
 
   <!-- App icon for browser tabs -->
   <link rel="icon" type="image/png" href="icon.png">
 
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+    
+    /* Splash screen */
     #splash {
       width: 100%;
-      height: 100vh; /* full screen */
+      height: 100vh; 
       display: flex;
       justify-content: center;
       align-items: center;
@@ -21,15 +23,53 @@
       left: 0;
       z-index: 9999;
     }
+
+    /* Calculator styling */
+    #app { display: none; }
+    label { font-weight: bold; }
+    textarea { width: 100%; max-width: 400px; height: 150px; margin: 10px 0; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #result { margin-top: 15px; font-weight: bold; }
   </style>
 
   <script>
-    // Hide splash after 2 seconds
+    // Hide splash and show app after 2 seconds
     window.addEventListener('load', function() {
       setTimeout(function() {
         document.getElementById('splash').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
       }, 2000);
     });
+
+    // Calculator function (Shoelace formula)
+    function calculateArea() {
+      const input = document.getElementById('points').value.trim();
+      if (!input) {
+        document.getElementById('result').innerText = 'Please enter points!';
+        return;
+      }
+
+      const lines = input.split('\n');
+      const points = lines.map(line => {
+        const [x, y] = line.split(',').map(Number);
+        return {x, y};
+      });
+
+      if (points.length < 3) {
+        document.getElementById('result').innerText = 'Enter at least 3 points!';
+        return;
+      }
+
+      let area = 0;
+      for (let i = 0; i < points.length; i++) {
+        const j = (i + 1) % points.length;
+        area += points[i].x * points[j].y;
+        area -= points[j].x * points[i].y;
+      }
+      area = Math.abs(area) / 2;
+
+      document.getElementById('result').innerText = `Area = ${area} square units`;
+    }
   </script>
 </head>
 <body>
@@ -39,10 +79,16 @@
     <img src="splash.png" alt="Loading..." style="max-width: 80%; max-height: 80%;">
   </div>
 
-  <!-- Your app HTML below -->
+  <!-- Calculator App -->
   <div id="app">
     <h1>UTM Area & Perimeter Calculator</h1>
-    <!-- rest of your calculator code -->
+    
+    <label for="points">Enter points (X,Y) one per line, separated by comma:</label>
+    <textarea id="points" placeholder="e.g. 715582,8253811"></textarea><br>
+    
+    <button onclick="calculateArea()">Calculate Area</button>
+    
+    <p id="result"></p>
   </div>
 
 </body>
