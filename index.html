@@ -1,126 +1,49 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>UTM Area & Perimeter Calculator</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:12px;color:#111}
-  h1{font-size:20px;margin-bottom:8px}
-  textarea{width:100%;height:220px;font-family:monospace;font-size:14px;padding:8px}
-  .row{display:flex;gap:8px;margin-top:10px}
-  .row > *{flex:1}
-  button{padding:10px;border-radius:6px;border:1px solid #888;background:#0b79d0;color:white;font-size:14px}
-  pre{background:#f6f6f6;padding:10px;border-radius:6px;white-space:pre-wrap;font-size:14px}
-  .hint{font-size:13px;color:#444;margin-top:6px}
-  label{font-weight:600;font-size:14px}
-</style>
+  <meta charset="UTF-8">
+  <title>UTM Calculator</title>
+
+  <!-- App icon for browser tabs -->
+  <link rel="icon" type="image/png" href="icon.png">
+
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    #splash {
+      width: 100%;
+      height: 100vh; /* full screen */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #fff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+    }
+  </style>
+
+  <script>
+    // Hide splash after 2 seconds
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        document.getElementById('splash').style.display = 'none';
+      }, 2000);
+    });
+  </script>
 </head>
 <body>
-  <h1>UTM Area & Perimeter Calculator</h1>
 
-  <label>Enter UTM points (one per line):</label>
-  <textarea id="pointsInput" placeholder="Paste something like:
-715000 8253000
-715100 8253000
-715100 8253100
-715000 8253100"></textarea>
-
-  <div class="hint">Accepted formats: <code>X Y</code> or <code>X,Y</code>. X = Easting, Y = Northing (meters).</div>
-
-  <div class="row">
-    <button id="calcBtn">Calculate</button>
-    <button id="clearBtn" style="background:#555">Clear</button>
+  <!-- Splash screen -->
+  <div id="splash">
+    <img src="splash.png" alt="Loading..." style="max-width: 80%; max-height: 80%;">
   </div>
 
-  <h2>Results</h2>
-  <pre id="results">No calculation yet.</pre>
-
-  <h2>Options</h2>
-  <label>Decimal places:</label>
-  <input id="decInput" type="number" min="0" max="6" value="2" style="width:80px;padding:6px">
-  <div class="hint">Affects perimeter and m² output. Hectares always show at least 4 decimal places.</div>
-
-<script>
-function parseLine(line){
-  line = line.trim();
-  if(line === "") throw "Empty line";
-  line = line.replace(",", " ").replace(/\s+/g, " ");
-  let parts = line.split(" ");
-  if(parts.length < 2) throw "Not enough numbers";
-  let x = Number(parts[0]);
-  let y = Number(parts[1]);
-  if(!isFinite(x) || !isFinite(y)) throw "Invalid number format";
-  return [x, y];
-}
-
-function shoelaceArea(points){
-  let n = points.length;
-  let sum1 = 0, sum2 = 0;
-  for(let i=0;i<n;i++){
-    let j = (i+1) % n;
-    sum1 += points[i][0] * points[j][1];
-    sum2 += points[i][1] * points[j][0];
-  }
-  return Math.abs(sum1 - sum2) / 2;
-}
-
-function perimeter(points){
-  let p = 0;
-  for(let i=0;i<points.length;i++){
-    let j = (i+1) % points.length;
-    let dx = points[j][0] - points[i][0];
-    let dy = points[j][1] - points[i][1];
-    p += Math.hypot(dx, dy);
-  }
-  return p;
-}
-
-document.getElementById("calcBtn").addEventListener("click", function(){
-  let raw = document.getElementById("pointsInput").value.trim();
-  if(raw === ""){
-    document.getElementById("results").textContent = "Please enter points first.";
-    return;
-  }
-
-  let lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
-  if(lines.length < 3){
-    document.getElementById("results").textContent = "You need at least 3 points.";
-    return;
-  }
-
-  let pts = [];
-  try{
-    for(let l of lines) pts.push(parseLine(l));
-  }catch(err){
-    document.getElementById("results").textContent = "Error: " + err;
-    return;
-  }
-
-  let dec = parseInt(document.getElementById("decInput").value) || 2;
-
-  let area_m2 = shoelaceArea(pts);
-  let area_ha = area_m2 / 10000;
-  let per_m = perimeter(pts);
-
-  let out = "";
-  out += "Points parsed: " + pts.length + "\n";
-  out += "Perimeter: " + per_m.toFixed(dec) + " m\n";
-  out += "Area: " + area_m2.toFixed(dec) + " m^2\n";
-  out += "Area: " + area_ha.toFixed(4) + " ha\n\n";
-  out += "Notes:\n";
-  out += " - Ensure points follow the boundary in order.\n";
-  out += " - UTM (meters) only.\n";
-  out += " - You can use your eTrex averaged values.\n";
-
-  document.getElementById("results").textContent = out;
-});
-
-document.getElementById("clearBtn").addEventListener("click", function(){
-  document.getElementById("pointsInput").value = "";
-  document.getElementById("results").textContent = "Cleared.";
-});
-</script>
+  <!-- Your app HTML below -->
+  <div id="app">
+    <h1>UTM Area & Perimeter Calculator</h1>
+    <!-- rest of your calculator code -->
+  </div>
 
 </body>
 </html>
